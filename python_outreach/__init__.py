@@ -8,9 +8,9 @@ import singer
 from singer import metadata
 from singer.catalog import write_catalog
 
-from tap_outreach.client import OutreachClient
-from tap_outreach.discover import discover
-from tap_outreach.sync import sync
+from python_outreach.client import OutreachClient
+from python_outreach.discover import discover
+from python_outreach.sync import sync
 
 LOGGER = singer.get_logger()
 
@@ -23,12 +23,10 @@ REQUIRED_CONFIG_KEYS = [
 ]
 
 
-def check_auth(client):
+def check_auth(or_client):
     LOGGER.info('Testing authentication')
     try:
-        client.get(
-            path='stages',
-            endpoint='stages')
+        or_client.get(path='stages', endpoint='stages')
     except:
         raise Exception('Error testing Outreach authentication')
 
@@ -41,10 +39,6 @@ def main():
     if parsed_args.discover:
         write_catalog(catalog)
     else:
-        with OutreachClient(parsed_args.config) as client:
-            check_auth(client)
-            sync(client,
-                parsed_args.config,
-                catalog,
-                parsed_args.state,
-                parsed_args.config['start_date'])
+        with OutreachClient(parsed_args.config) as or_client:
+            check_auth(or_client)
+            sync(or_client, parsed_args.config, catalog, parsed_args.state, parsed_args.config['start_date'])

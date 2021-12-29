@@ -16,7 +16,7 @@ setup(name='python-outreach',
       ],
       entry_points='''
           [console_scripts]
-          python-outreach=python_outreach:main
+          python-outreach=python-outreach:main
       ''',
       packages=['python_outreach'],
       package_data = {

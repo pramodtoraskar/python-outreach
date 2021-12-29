@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 import backoff
 import requests
 import singer
-from singer import metrics, utils
 from requests.exceptions import ConnectionError
+from singer import metrics, utils
 
 LOGGER = singer.get_logger()
 
@@ -110,3 +110,6 @@ class OutreachClient(object):
 
     def get(self, url=None, path=None, **kwargs):
         return self.request('GET', url=url, path=path, **kwargs)
+
+    def post(self, url=None, path=None, **kwargs):
+        return self.request('POST', url=url, path=path, **kwargs)
