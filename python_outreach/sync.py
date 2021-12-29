@@ -5,16 +5,6 @@ from singer.bookmarks import set_currently_syncing
 LOGGER = singer.get_logger()
 
 STREAM_CONFIGS = {
-    'accounts': {
-        'url_path': 'accounts',
-        'replication': 'incremental',
-        'filter_field': 'updatedAt',
-        'fks': [
-            'creatorId',
-            'ownerId',
-            'updaterId'
-        ]
-    },
     'call_dispositions': {
         'url_path': 'callDispositions',
         'replication': 'incremental',
@@ -43,60 +33,6 @@ STREAM_CONFIGS = {
             'userId'
         ]
     },
-    'content_categories': {
-        'url_path': 'contentCategories',
-        'replication': 'incremental',
-        'filter_field': 'updatedAt',
-        'fks': ['creatorId']
-    },
-    'duties': {
-        'url_path': 'duties',
-        'replication': 'full'
-    },
-    'events': {
-        'url_path': 'events',
-        'replication': 'incremental',
-        'filter_field': 'eventAt',
-        'fks': ['prospectId', 'userId']
-    },
-    'mailboxes': {
-        'url_path': 'mailboxes',
-        'replication': 'incremental',
-        'filter_field': 'updatedAt',
-        'fks': ['creatorId', 'updaterId']
-    },
-    'mailings': {
-        'url_path': 'mailings',
-        'replication': 'incremental',
-        'filter_field': 'updatedAt',
-        'fks': [
-            'calendarId',
-            'mailboxId',
-            'opportunityId',
-            'prospectId',
-            'sequenceId',
-            'sequenceStateId',
-            'sequenceStepId',
-            'taskId',
-            'templateId'
-        ]
-    },
-    'opportunities': {
-        'url_path': 'opportunities',
-        'replication': 'incremental',
-        'filter_field': 'updatedAt',
-        'fks': [
-            'accountId',
-            'creatorId',
-            'opportunityStageId',
-            'ownerId'
-        ]
-    },
-    'personas': {
-        'url_path': 'personas',
-        'replication': 'incremental',
-        'filter_field': 'updatedAt'
-    },
     'prospects': {
         'url_path': 'prospects',
         'replication': 'incremental',
@@ -116,70 +52,6 @@ STREAM_CONFIGS = {
         'replication': 'incremental',
         'filter_field': 'updatedAt',
         'fks': ['creatorId', 'updaterId']
-    },
-    'sequences': {
-        'url_path': 'sequences',
-        'replication': 'incremental',
-        'filter_field': 'updatedAt',
-        'fks': ['creatorId', 'ownerid', 'updaterId']
-    },
-    'sequence_states': {
-        'url_path': 'sequenceStates',
-        'replication': 'incremental',
-        'filter_field': 'updatedAt',
-        'fks': ['accountid', 'creatorId', 'prospectId', 'sequenceId']
-    },
-    'sequence_steps': {
-        'url_path': 'sequenceSteps',
-        'replication': 'incremental',
-        'filter_field': 'updatedAt',
-        'fks': ['creatorId', 'sequenceId', 'updaterId']
-    },
-    'sequence_templates': {
-        'url_path': 'sequenceTemplates',
-        'replication': 'full',
-        'filter_field': 'updatedAt',
-        'fks': ['creatorId', 'updaterId']
-    },
-    'tasks': {
-        'url_path': 'tasks',
-        'replication': 'incremental',
-        'filter_field': 'updatedAt',
-        'fks': [
-            'accountId',
-            'callId',
-            'completerId',
-            'creatorId',
-            'mailingId',
-            'opportunityId',
-            'ownerId',
-            'prospectId',
-            'sequenceId',
-            'sequenceStateId',
-            'sequenceStepId',
-            'subjectId',
-            'taskPriorityId',
-            'taskThemeId',
-            'templateId'
-        ]
-    },
-    'teams': {
-        'url_path': 'teams',
-        'replication': 'full',
-        'fks': ['creatorId', 'updaterId']
-    },
-    'users': {
-        'url_path': 'users',
-        'replication': 'incremental',
-        'filter_field': 'updatedAt',
-        'fks': [
-            'calendarId',
-            'mailboxId',
-            'profileId',
-            'roleId',
-            'creatorId',
-            'updaterId'
-        ]
     }
 }
 
