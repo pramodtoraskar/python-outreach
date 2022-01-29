@@ -1,39 +1,23 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 main() {
-  activate_virtualenv
-  run_tests
   build_distributions
   upload_distributions
 }
 
-activate_virtualenv() {
-  if [ -d venv ]; then
-    rm -r ./venv
-  fi
-  python3.8 -m virtualenv venv
-  source venv/bin/activate
-  install_dependencies
-}
-
-install_dependencies() {
-  pip install -e .[dev]
-  pip check
-}
-
-run_tests() {
-  bash unit_tests.sh
-}
-
 build_distributions() {
   mkdir -p dist
-  rm dist/*
+  rm -f dist/*
   python setup.py sdist bdist_wheel
 }
 
 upload_distributions() {
-  twine upload dist/* --skip-existing
+  if [ -z ${CI+x} ]; then
+    twine upload --skip-existing dist/*
+  else
+    twine upload --skip-existing --non-interactive --username "$PYPI_USERNAME" --password "$PYPI_PASSWORD" dist/*
+  fi
 }
 
 main
