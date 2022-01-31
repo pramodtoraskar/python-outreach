@@ -54,7 +54,8 @@ class OutreachClient(object):
         # pad by 10 seconds for clock drift
         self.__expires_at = datetime.utcnow() + timedelta(seconds=data['expires_in'] - 10)
 
-    def sleep_for_reset_period(self, response):
+    @staticmethod
+    def sleep_for_reset_period(response):
         reset = datetime.fromtimestamp(int(response.headers['x-ratelimit-reset']))
         # pad for clock drift/sync issues
         sleep_time = (reset - datetime.now()).total_seconds() + 10
@@ -64,7 +65,7 @@ class OutreachClient(object):
     @backoff.on_exception(backoff.expo, (Server5xxError, RateLimitError, ConnectionError), max_tries=5, factor=3)
     # Rate Limit: https://api.outreach.io/api/v2/docs#rate-limiting
     @utils.ratelimit(10000, 3600)
-    def request(self, method, path=None, url=None, skip_quota=False, **kwargs):
+    def request(self, method, path=None, url=None, data=None, skip_quota=False, **kwargs):
         if url is None and (self.__access_token is None or self.__expires_at <= datetime.utcnow()):
             self.refresh()
 
@@ -86,7 +87,7 @@ class OutreachClient(object):
             kwargs['headers']['User-Agent'] = self.__user_agent
 
         with metrics.http_request_timer(endpoint) as timer:
-            response = self.__session.request(method, url, **kwargs)
+            response = self.__session.request(method, data, url, **kwargs)
             timer.tags[metrics.Tag.http_status_code] = response.status_code
 
         if response.status_code >= 500:
@@ -113,3 +114,6 @@ class OutreachClient(object):
 
     def post(self, url=None, path=None, **kwargs):
         return self.request('POST', url=url, path=path, **kwargs)
+
+    def update(self, url=None, path=None, **kwargs):
+        return self.request('UPDATE', url=url, path=path, **kwargs)
