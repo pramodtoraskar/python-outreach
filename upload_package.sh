@@ -14,7 +14,7 @@ build_distributions() {
 
 upload_distributions() {
   if [ -z ${CI+x} ]; then
-    twine upload --skip-existing dist/*
+    twine upload --skip-existing --verbose dist/*
   else
     twine upload --skip-existing --non-interactive --username "$PYPI_USERNAME" --password "$PYPI_PASSWORD" dist/*
   fi
