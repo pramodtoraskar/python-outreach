@@ -7,18 +7,10 @@ import singer
 from requests.exceptions import ConnectionError
 from singer import metrics, utils
 
+from exception import Server5xxError, RateLimitError, ValidationError
+
 LOGGER = singer.get_logger()
 
-
-class Server5xxError(Exception):
-    pass
-
-
-class RateLimitError(Exception):
-    pass
-
-class ValidationError(Exception):
-    pass
 
 class OutreachClient(object):
     BASE_URL = 'https://api.outreach.io/api/v2/'
