@@ -7,7 +7,7 @@ import singer
 from requests.exceptions import ConnectionError
 from singer import metrics, utils
 
-from exception import Server5xxError, RateLimitError, ValidationError
+from .exception import Server5xxError, RateLimitError, ValidationError
 
 LOGGER = singer.get_logger()
 
