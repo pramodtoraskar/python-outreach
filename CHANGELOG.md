@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.1.0
+  * Update config and changes to error Handling   
 ## 0.0.4
   * Fixed exception import issue
 ## 0.0.3
