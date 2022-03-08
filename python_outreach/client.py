@@ -95,7 +95,15 @@ class OutreachClient(object):
         if response.status_code == 422:
             # Contacts contact is using an excluded email address
             LOGGER.warn('Contacts email hash has already been taken.')
-            raise ValidationError(response.text)
+            LOGGER.warn(response.text)
+            raise ValidationError({
+                "errors": [
+                    {"id": "validationError",
+                     "source": {"pointer": "/data"},
+                     "title": "Validation Error",
+                     "detail": "Contacts contact is using an excluded email address."}
+                ]
+            })
 
         response.raise_for_status()
 
