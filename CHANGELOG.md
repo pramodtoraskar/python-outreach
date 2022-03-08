@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.1.2
+  * Update ValidationError handling
 ## 0.1.1
   * Update config entry point
 ## 0.1.0
