@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.1.4
+  * Update ratelimit-reset & error log message  
 ## 0.1.3
   * Update RateLimitError event with messaging
 ## 0.1.2
