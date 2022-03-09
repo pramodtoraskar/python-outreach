@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.1.3
+  * Update RateLimitError event with messaging
 ## 0.1.2
   * Update ValidationError handling
 ## 0.1.1

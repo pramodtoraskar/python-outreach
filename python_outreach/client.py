@@ -55,6 +55,7 @@ class OutreachClient(object):
         sleep_time = (reset - datetime.now()).total_seconds() + 10
         LOGGER.warn('Sleeping for {:.2f} seconds for next rate limit window'.format(sleep_time))
         time.sleep(sleep_time)
+        return sleep_time
 
     @backoff.on_exception(backoff.expo, (Server5xxError, RateLimitError, ConnectionError), max_tries=5, factor=3)
     # Rate Limit: https://api.outreach.io/api/v2/docs#rate-limiting
@@ -89,8 +90,16 @@ class OutreachClient(object):
 
         if response.status_code == 429:
             LOGGER.warn('Rate limit hit - 429')
-            self.sleep_for_reset_period(response)
-            raise RateLimitError()
+            sleep_time = self.sleep_for_reset_period(response)
+            raise RateLimitError({
+                "errors": [
+                    {"id": "rateLimitError",
+                     "source": {},
+                     "title": "Rate Limit Error",
+                     "detail": "Contacts contact is using an excluded email address.",
+                     "sleep_time": sleep_time}
+                ]
+            })
 
         if response.status_code == 422:
             # Contacts contact is using an excluded email address
