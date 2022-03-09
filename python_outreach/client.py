@@ -50,9 +50,10 @@ class OutreachClient(object):
 
     @staticmethod
     def sleep_for_reset_period(response):
-        reset = datetime.fromtimestamp(int(response.headers['x-ratelimit-reset']))
+        r_limit = int(response.headers['x-ratelimit-reset']) if 'x-ratelimit-reset' in response.headers else 10000
+        reset = datetime.fromtimestamp(r_limit)
         # pad for clock drift/sync issues
-        sleep_time = (reset - datetime.now()).total_seconds() + 10
+        sleep_time = (reset - datetime.now()).total_seconds() + 20
         LOGGER.warn('Sleeping for {:.2f} seconds for next rate limit window'.format(sleep_time))
         time.sleep(sleep_time)
         return sleep_time
@@ -96,21 +97,23 @@ class OutreachClient(object):
                     {"id": "rateLimitError",
                      "source": {},
                      "title": "Rate Limit Error",
-                     "detail": "Contacts contact is using an excluded email address.",
+                     "detail": "Outreach Rate limit hit.",
                      "sleep_time": sleep_time}
                 ]
             })
 
         if response.status_code == 422:
             # Contacts contact is using an excluded email address
-            LOGGER.warn('Contacts email hash has already been taken.')
+            LOGGER.warn("[validationError] Contacts email hash has already been taken or "
+                        "Contacts contact is using an excluded email address.")
             LOGGER.warn(response.text)
             raise ValidationError({
                 "errors": [
                     {"id": "validationError",
                      "source": {"pointer": "/data"},
                      "title": "Validation Error",
-                     "detail": "Contacts contact is using an excluded email address."}
+                     "detail": "Contacts email hash has already been taken or "
+                               "Contacts contact is using an excluded email address."}
                 ]
             })
 
