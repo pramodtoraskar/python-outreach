@@ -50,13 +50,11 @@ class OutreachClient(object):
 
     @staticmethod
     def sleep_for_reset_period(response):
-        r_limit = int(response.headers['x-ratelimit-reset'])#if 'x-ratelimit-reset' in response.headers else 10000
-        reset = datetime.fromtimestamp(r_limit)
+        reset = datetime.fromtimestamp(int(response.headers['x-ratelimit-reset']))
         # pad for clock drift/sync issues
-        sleep_time = (reset - datetime.now()).total_seconds() + 20
+        sleep_time = (reset - datetime.now()).total_seconds() + 10
         LOGGER.warn('Sleeping for {:.2f} seconds for next rate limit window'.format(sleep_time))
         time.sleep(sleep_time)
-        return sleep_time
 
     @backoff.on_exception(backoff.expo, (Server5xxError, RateLimitError, ConnectionError), max_tries=5, factor=3)
     # Rate Limit: https://api.outreach.io/api/v2/docs#rate-limiting
@@ -90,30 +88,31 @@ class OutreachClient(object):
             raise Server5xxError(response.text)
 
         if response.status_code == 429:
-            LOGGER.warn('Rate limit hit - 429')
-            sleep_time = self.sleep_for_reset_period(response)
+            LOGGER.warn('\nRate limit hit - 429')
+            LOGGER.warn(response.text)
+            LOGGER.warn(response.headers)
+            LOGGER.warn('\n')
+
+            self.sleep_for_reset_period(response)
             raise RateLimitError({
                 "errors": [
                     {"id": "rateLimitError",
                      "source": {},
                      "title": "Rate Limit Error",
-                     "detail": "Outreach Rate limit hit.",
-                     "sleep_time": sleep_time}
+                     "detail": "Outreach Rate limit hit."}
                 ]
             })
 
         if response.status_code == 422:
             # Contacts contact is using an excluded email address
-            LOGGER.warn("[validationError] Contacts email hash has already been taken or "
-                        "Contacts contact is using an excluded email address.")
             LOGGER.warn(response.text)
+            LOGGER.warn("[validationError] Contacts contact is using an excluded email address.")
             raise ValidationError({
                 "errors": [
                     {"id": "validationError",
                      "source": {"pointer": "/data"},
                      "title": "Validation Error",
-                     "detail": "Contacts email hash has already been taken or "
-                               "Contacts contact is using an excluded email address."}
+                     "detail": "Contacts contact is using an excluded email address."}
                 ]
             })
 
