@@ -50,7 +50,11 @@ class OutreachClient(object):
 
     @staticmethod
     def sleep_for_reset_period(response):
-        reset = datetime.fromtimestamp(int(response.headers['retry-after']))
+        if 'x-ratelimit-reset' in response.headers:
+            r_limit = response.headers['x-ratelimit-reset']
+        else:
+            r_limit = response.headers['retry-after']
+        reset = datetime.fromtimestamp(int(r_limit))
         # pad for clock drift/sync issues
         sleep_time = (reset - datetime.now()).total_seconds() + 10
         LOGGER.warn('Sleeping for {:.2f} seconds for next rate limit window'.format(sleep_time))
