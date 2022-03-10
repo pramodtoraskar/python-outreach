@@ -50,15 +50,9 @@ class OutreachClient(object):
 
     @staticmethod
     def sleep_for_reset_period(response):
-        if 'x-ratelimit-reset' in response.headers:
-            r_limit = response.headers['x-ratelimit-reset']
-        else:
-            r_limit = response.headers['retry-after']
-
-        reset = datetime.fromtimestamp(int(r_limit))
+        reset = datetime.fromtimestamp(int(response.headers['x-ratelimit-reset']))
         # pad for clock drift/sync issues
         sleep_time = (reset - datetime.now()).total_seconds() + 10
-
         LOGGER.warn('Sleeping for {:.2f} seconds for next rate limit window'.format(sleep_time))
         time.sleep(sleep_time)
 
@@ -94,12 +88,9 @@ class OutreachClient(object):
             raise Server5xxError(response.text)
 
         if response.status_code == 429:
-            LOGGER.warn('\nRate limit hit - 429')
-            LOGGER.warn(response.text)
-            LOGGER.warn(response.headers)
-            LOGGER.warn('\n')
-            time.sleep(int(response.headers['retry-after']))
-            #self.sleep_for_reset_period(response)
+            retry_time = int(response.headers['retry-after'])
+            LOGGER.warn(f'Error 429 - Sleep for {retry_time} as Rate limit hit')
+            time.sleep(retry_time)
             raise RateLimitError({
                 "errors": [
                     {"id": "x-ratelimit-reset",
@@ -111,7 +102,6 @@ class OutreachClient(object):
 
         if response.status_code == 422:
             # Contacts contact is using an excluded email address
-            LOGGER.warn(response.text)
             LOGGER.warn("[validationError] Contacts contact is using an excluded email address.")
             raise ValidationError({
                 "errors": [
