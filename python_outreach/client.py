@@ -50,7 +50,7 @@ class OutreachClient(object):
 
     @staticmethod
     def sleep_for_reset_period(response):
-        reset = datetime.fromtimestamp(int(response.headers['x-ratelimit-reset']))
+        reset = datetime.fromtimestamp(int(response.headers['retry-after']))
         # pad for clock drift/sync issues
         sleep_time = (reset - datetime.now()).total_seconds() + 10
         LOGGER.warn('Sleeping for {:.2f} seconds for next rate limit window'.format(sleep_time))
@@ -96,10 +96,10 @@ class OutreachClient(object):
             self.sleep_for_reset_period(response)
             raise RateLimitError({
                 "errors": [
-                    {"id": "rateLimitError",
+                    {"id": "x-ratelimit-reset",
                      "source": {},
                      "title": "Rate Limit Error",
-                     "detail": "Outreach Rate limit hit."}
+                     "detail": "Retry later"}
                 ]
             })
 
