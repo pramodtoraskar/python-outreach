@@ -50,7 +50,7 @@ class OutreachClient(object):
 
     @staticmethod
     def sleep_for_reset_period(response):
-        r_limit = int(response.headers['x-ratelimit-reset']) if 'x-ratelimit-reset' in response.headers else 10000
+        r_limit = int(response.headers['x-ratelimit-reset'])#if 'x-ratelimit-reset' in response.headers else 10000
         reset = datetime.fromtimestamp(r_limit)
         # pad for clock drift/sync issues
         sleep_time = (reset - datetime.now()).total_seconds() + 20
