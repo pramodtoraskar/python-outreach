@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.1.5
+  * Final Update with Error Handling and Retry logic
 ## 0.1.4
   * Update ratelimit-reset & error log message  
 ## 0.1.3

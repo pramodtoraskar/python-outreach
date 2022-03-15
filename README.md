@@ -1,4 +1,4 @@
-# outreach
+# Python-Outreach
 Python wrapper functions for Outreach APIs, tested with Python 3.8 - 3.9.
 
 This python client wrapper helps connects outreach API by authentication flow, any request use two distinct
