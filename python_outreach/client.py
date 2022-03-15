@@ -89,7 +89,7 @@ class OutreachClient(object):
 
         if response.status_code == 429:
             retry_time = int(response.headers['retry-after'])
-            LOGGER.warn(f'Error 429 - Sleep for {retry_time} as Rate limit hit')
+            LOGGER.warn(f'Error 429 - Sleep for {retry_time} seconds, as Rate limit hit')
             time.sleep(retry_time)
             raise RateLimitError({
                 "errors": [
